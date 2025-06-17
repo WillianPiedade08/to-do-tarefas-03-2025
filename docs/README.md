@@ -5,3 +5,4 @@
 ## DER
 
 ![DER](./wireframes/Diagrama%20DER.png)
+![DCU](./wireframes/DCU.jpg)
