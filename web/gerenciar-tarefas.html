@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento de Tarefas</title>
+    <link rel="stylesheet" href="gerenciar.css">
+</head>
+
+<body>
+    <header>
+        <span class="header-title">Gerenciamento de Tarefas</span>
+        <nav>
+            <a href="index.html">Cadastro de Usuários</a>
+            <a href="cadastro-tarefas.html">Cadastro de Tarefas</a>
+            <a href="gerenciar-tarefas.html">Gerenciar Tarefas</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Tarefas</h1>
+        <div class="colunas">
+            <div class="coluna" id="aFazer">
+                <h2>A Fazer</h2>
+            </div>
+            <div class="coluna" id="fazendo">
+                <h2>Fazendo</h2>
+            </div>
+            <div class="coluna" id="pronto">
+                <h2>Pronto</h2>
+            </div>
+        </div>
+        <script>
+function exibirTarefas() {
+    const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+    const colunas = {
+        "A Fazer": document.getElementById('aFazer'),
+        "Fazendo": document.getElementById('fazendo'),
+        "Pronto": document.getElementById('pronto')
+    };
+
+    for (const key in colunas) {
+        colunas[key].innerHTML = `<h2>${key}</h2>`;
+    }
+
+    tarefas.forEach((tarefa, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card-tarefa';
+        card.innerHTML = `
+            <b>Descrição:</b> ${tarefa.descricao}<br>
+            <b>Setor:</b> ${tarefa.setor}<br>
+            <b>Prioridade:</b> ${tarefa.prioridade}<br>
+            <b>Vinculado a:</b> ${tarefa.usuario}<br>
+            <button class="editar">Editar</button>
+            <button class="excluir">Excluir</button>
+            <br>
+            <input type="radio" name="status${idx}" value="A Fazer" ${tarefa.status === 'A Fazer' ? 'checked' : ''}> A fazer
+            <input type="radio" name="status${idx}" value="Fazendo" ${tarefa.status === 'Fazendo' ? 'checked' : ''}> Fazendo
+            <input type="radio" name="status${idx}" value="Pronto" ${tarefa.status === 'Pronto' ? 'checked' : ''}> Pronto
+            <br>
+            <button class="alterar-status">Alterar Status</button>
+        `;
+
+        card.querySelector('.excluir').onclick = function() {
+            if (confirm('Deseja excluir esta tarefa?')) {
+                tarefas.splice(idx, 1);
+                localStorage.setItem('tarefas', JSON.stringify(tarefas));
+                exibirTarefas();
+            }
+        };
+
+
+        card.querySelector('.editar').onclick = function() {
+            const novaDescricao = prompt('Descrição:', tarefa.descricao);
+            if (novaDescricao === null) return;
+            const novoSetor = prompt('Setor:', tarefa.setor);
+            if (novoSetor === null) return;
+            const novoUsuario = prompt('Usuário:', tarefa.usuario);
+            if (novoUsuario === null) return;
+            const novaPrioridade = prompt('Prioridade:', tarefa.prioridade);
+            if (novaPrioridade === null) return;
+            tarefa.descricao = novaDescricao;
+            tarefa.setor = novoSetor;
+            tarefa.usuario = novoUsuario;
+            tarefa.prioridade = novaPrioridade;
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+            exibirTarefas();
+        };
+
+        card.querySelector('.alterar-status').onclick = function() {
+            const radios = card.querySelectorAll(`input[type="radio"][name="status${idx}"]`);
+            let novoStatus = tarefa.status;
+            radios.forEach(radio => {
+                if (radio.checked) novoStatus = radio.value;
+            });
+            tarefa.status = novoStatus;
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+            exibirTarefas();
+        };
+
+        colunas[tarefa.status].appendChild(card);
+    });
+}
+
+window.onload = exibirTarefas;
+</script>
+    </main>
+</body>
+
+</html>

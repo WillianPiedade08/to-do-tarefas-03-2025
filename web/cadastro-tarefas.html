@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Tarefa</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+
+<body>
+    <header>
+        <span class="header-title">Gerenciamento de Tarefas</span>
+        <nav>
+            <a href="index.html">Cadastro de Usuários</a>
+            <a href="cadastro-tarefas.html">Cadastro de Tarefas</a>
+            <a href="gerenciar-tarefas.html">Gerenciar Tarefas</a>
+        </nav>
+    </header>
+    <h1>Cadastro de Tarefas</h1>
+    <form id="cadastroTarefa" onsubmit="return validarFormulario()">
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" required>
+
+        <label for="setor">Setor:</label>
+        <input type="text" id="setor" required>
+
+        <label for="usuario">Usuário:</label>
+        <select id="usuario" required>
+            <option>João</option>
+        </select>
+
+        <label for="prioridade">Prioridade:</label>
+        <select id="prioridade" required>
+            <option value="baixa">Baixa</option>
+            <option value="média">Média</option>
+            <option value="alta">Alta</option>
+        </select>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+    <div id="mensagem"></div>
+    <div class="footer-wireframe">
+    </div>
+
+    <script>
+        window.onload = function () {
+            
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const select = document.getElementById('usuario');
+            select.innerHTML = ""; 
+            usuarios.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.nome;
+                opt.textContent = u.nome;
+                select.appendChild(opt);
+            });
+        };
+
+        function validarFormulario() {
+            const descricao = document.getElementById('descricao').value;
+            const setor = document.getElementById('setor').value;
+            const usuario = document.getElementById('usuario').value;
+            const prioridade = document.getElementById('prioridade').value;
+
+            const tarefa = { descricao, setor, usuario, prioridade, status: "A Fazer" };
+
+            const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+            tarefas.push(tarefa);
+
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+
+            document.getElementById('mensagem').innerText = "Cadastro concluído com sucesso";
+
+            document.getElementById('cadastroTarefa').reset();
+            return false;
+        }
+    </script>
+</body>
+
+</html>
