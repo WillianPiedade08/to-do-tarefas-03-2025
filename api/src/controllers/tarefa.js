@@ -31,12 +31,12 @@ const listarTarefas = async (req, res) => {
 
 const atualizarTarefa = async (req, res) => {
   const { id } = req.params;
-  const { status, prioridade } = req.body;
+  const { descricao, setor, prioridade, usuarioId, status } = req.body;
 
   try {
     const tarefa = await prisma.tarefa.update({
       where: { id: Number(id) },
-      data: { status, prioridade },
+      data: { descricao, setor, prioridade, usuarioId, status },
     });
     res.json(tarefa);
   } catch (error) {
@@ -44,4 +44,16 @@ const atualizarTarefa = async (req, res) => {
   }
 };
 
-module.exports = { criarTarefa, listarTarefas, atualizarTarefa };
+const deletarTarefa = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.tarefa.delete({
+      where: { id: Number(id) }
+    });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ erro: "Erro ao deletar tarefa", detalhe: error.message });
+  }
+};
+
+module.exports = { criarTarefa, listarTarefas, atualizarTarefa, deletarTarefa };
